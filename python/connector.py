@@ -1,4 +1,5 @@
 import mysql.connector as mysql
+import time
 from datetime import datetime, timedelta
 from jwcrypto import jwt, jwk
 
@@ -10,7 +11,15 @@ PASSWORD = "root"
 
 class Connector:
     def __init__(self):
-        self.db_connection = mysql.connect(host=HOST, database=DATABASE, user=USER, password=PASSWORD)
+        connected = False
+        while(not connected):
+            try:
+                self.db_connection = mysql.connect(host=HOST, database=DATABASE, user=USER, password=PASSWORD)
+                connected = True
+            except:
+                print("Waiting for DB to come online")
+                time.sleep(3)
+
         self.key = jwk.JWK(generate='oct', size=256)
 
     def generateToken(self, user):
